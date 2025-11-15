@@ -1,0 +1,58 @@
+/* ExactOdometer layout tweaked so last digit background is red */
+.exact-odometer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Courier New', monospace;
+}
+
+.exact-odometer-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.exact-odometer-row {
+  display: inline-flex;
+  background: #000000;
+  padding: 4px 6px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px #111827, 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+.exact-odometer-cell {
+  width: 22px;
+  height: 36px;
+  background: #111827;
+  border-right: 1px solid #1f2933;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #f9fafb; /* always white numbers */
+  position: relative;
+}
+
+/* horizontal white bar behind numbers */
+.exact-odometer-cell::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  background: rgba(249, 250, 251, 0.4);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+/* last digit with red background */
+.exact-odometer-cell.last-digit {
+  background: #b91c1c;
+}
+.exact-odometer-cell span {
+  position: relative;
+  z-index: 1;
+}
