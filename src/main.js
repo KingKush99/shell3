@@ -1,15 +1,17 @@
-// src/main.js (pure JavaScript, no JSX)
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx' // This imports JSX from another file (OK)
-import './index.css'
+// /src/main.js
+// React entrypoint for Vite
 
-// Create root element using pure JS
-const root = ReactDOM.createRoot(document.getElementById('root'))
+import React from "react"
+import ReactDOM from "react-dom/client"
+import App from "./App.jsx"
+import "./index.css"
 
-// Render using React.createElement (no JSX syntax)
+// Create a root
+const root = ReactDOM.createRoot(document.getElementById("root"))
+
+// Render the app
 root.render(
-  React.createElement(React.StrictMode, null, 
-    React.createElement(App, null)
-  )
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 )
