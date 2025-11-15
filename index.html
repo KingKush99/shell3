@@ -2,12 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- ❌ Old favicon path (causes 404 on GitHub Pages) -->
+    <!-- <link rel="icon" type="image/x-icon" href="/favicon.ico" /> -->
+
+    <!-- ✅ New favicon path (matches your project structure) -->
+    <link rel="icon" type="image/x-icon" href="./public/favicon.ico" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Shell</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.js"></script>
+
+    <!-- ❌ Old script path (404 because /src/main.js points outside the repo folder) -->
+    <!-- <script type="module" src="/src/main.js"></script> -->
+
+    <!-- ✅ Correct relative path -->
+    <script type="module" src="./src/main.js"></script>
   </body>
 </html>
