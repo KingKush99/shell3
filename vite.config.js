@@ -1,14 +1,16 @@
-// vite.config.js - MODIFIED to remove 'base' and set a specific port
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  // The 'base' line has been removed.
+  // 👇 ADD THIS LINE (this is for GitHub Pages under /shell3/)
+  base: '/shell3/',
+
   plugins: [react(), tailwindcss()],
-  
-  // Add this 'server' block to specify the port
+
+  // This is only for localhost dev, totally fine to keep
   server: {
     port: 5839,
   },
@@ -26,9 +28,9 @@ export default defineConfig({
       output: {
         format: 'es',
         manualChunks: {
-          'vendor': ['react', 'react-dom']
-        }
-      }
-    }
-  }
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
 })
