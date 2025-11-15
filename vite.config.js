@@ -1,10 +1,11 @@
+// vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  base: '/shell3/',          // 👈 important for GitHub Pages
+  base: '/shell3/',   // 👈 THIS LINE IS CRITICAL FOR GITHUB PAGES
 
   plugins: [react(), tailwindcss()],
 
