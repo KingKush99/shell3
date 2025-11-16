@@ -193,41 +193,40 @@ function App() {
 
   // UPDATED: Button configuration with multiplayer hub action
   const buttonConfigs = {
-    live: { emoji: '🔴', color: 'from-red-600 to-red-800', action: 'newWindow' },
+    live: { emoji: '🔴', color: 'from-red-600 to-red-800', action: 'page' }, // CORRECTED
     shop: { emoji: '🛒', color: 'from-green-600 to-green-800', action: 'modal' },
-    auctions: { emoji: '🏆', color: 'from-yellow-600 to-yellow-800', action: 'newWindow' },
+    auctions: { emoji: '🏆', color: 'from-yellow-600 to-yellow-800', action: 'page' }, // CORRECTED
     variations: { emoji: '🎲', color: 'from-purple-600 to-purple-800', action: 'dropdown' },
     players: { emoji: '👥', color: 'from-blue-600 to-blue-800', action: 'dropdown' },
-    singlePlayer: { emoji: '🎮', color: 'from-indigo-600 to-indigo-800', action: 'newWindow' },
-    multiplayer: { emoji: '🌐', color: 'from-teal-600 to-teal-800', action: 'multiplayerHub' }, // CHANGED
+    singlePlayer: { emoji: '🎮', color: 'from-indigo-600 to-indigo-800', action: 'modal' }, // CORRECTED
+    multiplayer: { emoji: '🌐', color: 'from-teal-600 to-teal-800', action: 'multiplayerHub' },
     campaign: { emoji: '⚔️', color: 'from-orange-600 to-orange-800', action: 'modal' },
     rulesGuide: { emoji: '📖', color: 'from-emerald-600 to-emerald-800', action: 'modal' },
     themes: { emoji: '🎨', color: 'from-pink-600 to-pink-800', action: 'modal' },
     leaderboard: { emoji: '🏅', color: 'from-amber-600 to-amber-800', action: 'modal' },
     achievements: { emoji: '🏆', color: 'from-lime-600 to-lime-800', action: 'modal' },
-    profile: { emoji: '👤', color: 'from-violet-600 to-violet-800', action: 'newWindow' },
+    profile: { emoji: '👤', color: 'from-violet-600 to-violet-800', action: 'page' }, // CORRECTED
     music: { emoji: '🎵', color: 'from-rose-600 to-rose-800', action: 'modal' },
     settings: { emoji: '⚙️', color: 'from-gray-600 to-gray-800', action: 'modal' },
     faq: { emoji: '❓', color: 'from-red-700 to-red-900', action: 'dropdown' }
   };
 
-  // UPDATED: Button click handler with multiplayer support
+  // UPDATED: Button click handler with SPA-friendly navigation
   const handleButtonClick = (buttonKey) => {
     const usage = buttonUsage[buttonKey] || 0;
     setButtonUsage(prev => ({ ...prev, [buttonKey]: usage + 1 }));
 
     const config = buttonConfigs[buttonKey];
     
-    // Check if variation and player mode are selected for certain features
-    if (['achievements', 'singlePlayer', 'multiplayer'].includes(buttonKey)) {
+    if (['achievements', 'singlePlayer', 'multiplayer', 'multiplayerHub'].includes(buttonKey)) {
       if (!selectedVariation || !selectedPlayerMode) {
         showAlert('Please select a Variation and Player Mode before accessing this feature.', 'warning');
         return;
       }
     }
     
+    // Handle SPA page/modal views
     if (buttonKey === 'live') {
-      // Open Live in same tab like Profile
       setShowLivePage(true);
       return;
     }
@@ -237,7 +236,6 @@ function App() {
       return;
     }
     
-    // NEW: Multiplayer hub handler
     if (buttonKey === 'multiplayer') {
       setShowMultiplayerHub(true);
       return;
@@ -293,6 +291,7 @@ function App() {
       return;
     }
     
+    // Handle dropdowns
     if (buttonKey === 'variations') {
       setShowVariationsDropdown(!showVariationsDropdown);
       setShowPlayersDropdown(false);
@@ -314,14 +313,14 @@ function App() {
       return;
     }
     
-    if (config.action === 'newWindow') {
-      window.open(`/${buttonKey}`, '_blank');
-    } else if (config.action === 'modal') {
+    // Fallback for any other actions
+    if (config.action === 'modal') {
       showAlert(`${t(buttonKey)} modal would open here`, 'info');
     } else if (config.action === 'dropdown') {
       showAlert(`${t(buttonKey)} dropdown would appear here`, 'info');
     }
   };
+
 
   // Tutorial navigation handler
   const handleTutorialNavigation = (action, stepData) => {
@@ -673,7 +672,7 @@ function App() {
               </button>
               <button 
                 onClick={() => {
-                  window.open('/auctions', '_blank');
+                  setShowAuctionPage(true);
                   setShowHamburgerMenu(false);
                 }}
                 className="block w-full text-left hover:bg-gray-700 p-2 rounded"
