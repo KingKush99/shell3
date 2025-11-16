@@ -2,17 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <!-- This favicon is only used for local dev; GH Pages will use the one in docs/ -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Shell</title>
-
-    <!-- Vite-built CSS (from docs/assets) -->
-    <link rel="stylesheet" href="./assets/index-CzWNoai_.css" />
   </head>
   <body>
     <div id="root"></div>
-
-    <!-- Vite-built JS bundle (entry point) -->
-    <script type="module" src="./assets/index-BddDL4qL.js"></script>
+    <!-- Vite dev/prod entry – DO NOT point this at /assets or dist -->
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
