@@ -4,14 +4,12 @@ import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
-  base: '/shell3/',   // 👈 MUST be here for GitHub Pages
-
+  // IMPORTANT: base = '/shell3/' for GitHub Pages
+  base: '/shell3/',
   plugins: [react(), tailwindcss()],
-
   server: {
     port: 5839,
   },
-
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
