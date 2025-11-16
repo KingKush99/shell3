@@ -1,31 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  // IMPORTANT: base = '/shell3/' for GitHub Pages
-  base: '/shell3/',
-  plugins: [react(), tailwindcss()],
-  server: {
-    port: 5839,
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
+  plugins: [react()],
   build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
-    target: 'es2015',
-    rollupOptions: {
-      output: {
-        format: 'es',
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-        },
-      },
-    },
+    outDir: 'docs' // Ensure the output directory is 'docs'
   },
+  base: '/game-shell/' // Set the base path for GitHub Pages
 })
