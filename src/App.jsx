@@ -23,10 +23,10 @@ import AchievementsModal from './components/AchievementsModal';
 import ThemesModal from './components/ThemesModal';
 import SinglePlayerLobby from './components/SinglePlayerLobby';
 import MultiplayerLobby from './components/MultiplayerLobby';
-import DailyDiceGame from './components/DailyDiceGame';
 import AuctionWindow from './components/AuctionWindow';
 import AuctionPage from './components/AuctionPage';
 import SettingsModal from './components/SettingsModal';
+import MessagingWidget from './components/MessagingWidget';
 // NEW: Multiplayer imports
 import MultiplayerHub from './components/MultiplayerHub';
 import VerificationModal from './components/VerificationModal';
@@ -64,7 +64,6 @@ function App() {
   const [showFAQDropdown, setShowFAQDropdown] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showThemesModal, setShowThemesModal] = useState(false);
-  const [showDailyDiceGame, setShowDailyDiceGame] = useState(false);
   const [showAuctionWindow, setShowAuctionWindow] = useState(false);
   const [showAuctionPage, setShowAuctionPage] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -92,6 +91,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   // NEW: Multiplayer state
   const [showMultiplayerHub, setShowMultiplayerHub] = useState(false);
+  const [showMessaging, setShowMessaging] = useState(false);
+  const [messagingPos, setMessagingPos] = useState({ x: 0, y: 0 });
+  const [isMessagingDragging, setIsMessagingDragging] = useState(false);
   const [userSubscriptions, setUserSubscriptions] = useState({
     youtube: localStorage.getItem('youtubeSubscribed') === 'true',
     instagram: localStorage.getItem('instagramFollowed') === 'true'
@@ -138,27 +140,14 @@ function App() {
     }
   };
 
-  // Trigger fireworks on page load/refresh and check for daily dice game
+  
+  // Trigger fireworks, loading state, odometer, cursor, and outside clicks
   useEffect(() => {
+    // Fireworks on page load
     setFireworksTrigger(prev => prev + 1);
-    
-    // Check if daily dice game should be shown
-    const checkDailyDice = () => {
-      const today = new Date().toDateString();
-      const lastPlayed = localStorage.getItem('dailyDiceLastPlayed');
-      
-      if (lastPlayed !== today) {
-        // Show daily dice game if not played today
-        setTimeout(() => {
-          setShowDailyDiceGame(true);
-        }, 2000); // Show after 2 seconds
-      }
-    };
-    
-    checkDailyDice();
-    
+
     // Simulate loading state
-    setTimeout(() => {
+    const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
     
@@ -185,11 +174,166 @@ function App() {
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
+      clearTimeout(loadingTimeout);
       clearInterval(interval);
       clearInterval(cursorInterval);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const renderFooter = () => (
+    <footer className="bg-gray-900 text-white py-8 mt-16 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+            <div className="container mx-auto px-4">
+              {/* Odometers */}
+              <div className="flex flex-col items-center gap-6 mb-8">
+                <ExactOdometer value={onlineUsers} label="ONLINE NOW" />
+                <ExactOdometer value={totalVisitors} label="ALL TIME VISITORS" />
+              </div>
+
+              {/* Footer Links */}
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-8">
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-blue-400">ACCESSIBILITY</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a href="#" className="hover:text-blue-300">Accessibility Options</a></li>
+                    <li><button onClick={() => setShowSuggestionsModal(true)} className="hover:text-blue-300 text-left">Suggestions</button></li>
+                  </ul>
+                </div>
+            
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-orange-400">COMPANY</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a href="#" className="hover:text-orange-300">About Us</a></li>
+                    <li><a href="#" className="hover:text-orange-300">Press Kit</a></li>
+                    <li><a href="#" className="hover:text-orange-300">Newsletter</a></li>
+                  </ul>
+                </div>
+            
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-purple-400">COMPETITIONS</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><button onClick={() => setShowTournamentModal(true)} className="hover:text-purple-300 text-left">Tournaments</button></li>
+                    <li><button onClick={() => setShowTournamentModal(true)} className="hover:text-purple-300 text-left">Registration</button></li>
+                    <li><a href="#" className="hover:text-purple-300">Prizes</a></li>
+                    <li><a href="#" className="hover:text-purple-300">Awards</a></li>
+                    <li><a href="#" className="hover:text-purple-300">Player of the Month</a></li>
+                    <li><a href="#" className="hover:text-purple-300">Hall of Fame</a></li>
+                    <li><a href="#" className="hover:text-purple-300">Credits & Credibility</a></li>
+                  </ul>
+                </div>
+            
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-green-400">LEGAL</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a href="#" className="hover:text-green-300">Terms of Service</a></li>
+                    <li><a href="#" className="hover:text-green-300">Privacy Policy</a></li>
+                    <li><a href="#" className="hover:text-green-300">Cookie Policy</a></li>
+                    <li><a href="#" className="hover:text-green-300">Community Guidelines</a></li>
+                  </ul>
+                </div>
+            
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-red-400">SUPPORT</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a href="#" className="hover:text-red-300">Contact Us</a></li>
+                    <li><a href="#" className="hover:text-red-300">Help Center</a></li>
+                    <li><a href="#" className="hover:text-red-300">FAQs</a></li>
+                    <li><a href="#" className="hover:text-red-300">Report a Bug</a></li>
+                    <li><a href="#" className="hover:text-red-300">Feature Request</a></li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-lg mb-4 text-cyan-400">SOCIAL MEDIA</h3>
+                  <ul className="space-y-2 text-sm">
+                    <li><a href="https://facebook.com" className="hover:text-cyan-300 flex items-center gap-2">📘 Facebook</a></li>
+                    <li><a href="https://x.com" className="hover:text-cyan-300 flex items-center gap-2">❌ X</a></li>
+                    <li><a href="https://instagram.com" className="hover:text-cyan-300 flex items-center gap-2">📷 Instagram</a></li>
+                    <li><a href="https://snapchat.com" className="hover:text-cyan-300 flex items-center gap-2">👻 Snapchat</a></li>
+                    <li><a href="https://youtube.com" className="hover:text-cyan-300 flex items-center gap-2">📺 YouTube</a></li>
+                    <li><a href="https://linkedin.com" className="hover:text-cyan-300 flex items-center gap-2">💼 LinkedIn</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Language Selection */}
+              <div className="flex justify-center items-center border-t border-gray-700 pt-6">
+                <select 
+                  value={language} 
+                  onChange={(e) => setLanguage(e.target.value)}
+                  className="bg-gray-800 text-white rounded px-3 py-2 border border-gray-600"
+                  aria-label="Select Language"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                  <option value="de">Deutsch</option>
+                  <option value="it">Italiano</option>
+                  <option value="pt">Português</option>
+                  <option value="ru">Русский</option>
+                  <option value="zh">中文</option>
+                  <option value="ja">日本語</option>
+                  <option value="ko">한국어</option>
+                </select>
+              </div>
+
+              {/* Mobile App Downloads */}
+              <div className="text-center mt-8">
+                <h3 className="text-lg font-bold mb-4">{t('downloadMobileApp')}</h3>
+                <div className="flex justify-center gap-4">
+                  <a 
+                    href="https://apps.apple.com/app/game-shell" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    📱 iOS App
+                  </a>
+                  <a 
+                    href="https://play.google.com/store/apps/details?id=com.gameshell" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition-colors"
+                  >
+                    🤖 Android App
+                  </a>
+                </div>
+              </div>
+            </div>
+          </footer>
+  );
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setMessagingPos({
+        x: window.innerWidth - 80,
+        y: window.innerHeight / 2
+      });
+    }
+
+    const handleMouseMove = (event) => {
+      if (!isMessagingDragging) return;
+      setMessagingPos({
+        x: event.clientX - 24,
+        y: event.clientY - 24
+      });
+    };
+
+    const handleMouseUp = () => {
+      if (isMessagingDragging) {
+        setIsMessagingDragging(false);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isMessagingDragging]);
+;
 
   // UPDATED: Button configuration with multiplayer hub action
   const buttonConfigs = {
@@ -413,6 +557,11 @@ function App() {
     localStorage.setItem('selectedPlayerMode', playerMode);
   };
 
+
+  const handleMessagingMouseDown = (event) => {
+    event.preventDefault();
+    setIsMessagingDragging(true);
+  };
   const sortButtons = (buttons, type) => {
     switch (type) {
       case 'mostUsed':
@@ -794,6 +943,56 @@ function App() {
             </div>
           </div>
         )}
+
+      {/* Draggable global messaging button */}
+      <div
+        className="messaging-draggable-button"
+        style={{ top: messagingPos.y, left: messagingPos.x, position: 'fixed', zIndex: 60 }}
+        onMouseDown={handleMessagingMouseDown}
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowMessaging((prev) => !prev);
+        }}
+      >
+        💬
+      </div>
+
+      {showMessaging && (
+        <div className="messaging-modal-overlay">
+          <div className="messaging-modal">
+            <div className="messaging-modal-header">
+              <h3>Messages</h3>
+              <button
+                className="messaging-close-button"
+                onClick={() => setShowMessaging(false)}
+                type="button"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="messaging-modal-body">
+              <div className="messaging-thread-list">
+                <div className="messaging-thread-item">📨 SumoGal_1 (online)</div>
+                <div className="messaging-thread-item">📨 Dojo_Dreamer</div>
+                <div className="messaging-thread-item">📨 BeltBreaker</div>
+              </div>
+              <div className="messaging-chat-window">
+                <div className="messaging-chat-log">
+                  <p><strong>SumoGal_1:</strong> GG on that last match!</p>
+                  <p><strong>You:</strong> Thanks! Want to rematch later tonight?</p>
+                </div>
+                <div className="messaging-input-row">
+                  <input
+                    type="text"
+                    placeholder="Type a message..."
+                  />
+                  <button type="button">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
 
       <div className="fixed bottom-4 right-4 z-50">
@@ -806,6 +1005,8 @@ function App() {
       </div>
 
       {showMiniSlots && <EnhancedMiniSlots onClose={() => setShowMiniSlots(false)} />}
+
+      <MessagingWidget />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
@@ -976,125 +1177,7 @@ function App() {
       </div>
       
       {/* Footer - Full Width */}
-      <footer className="bg-gray-900 text-white py-8 mt-16 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-        <div className="container mx-auto px-4">
-          {/* Odometers */}
-          <div className="flex flex-col items-center gap-6 mb-8">
-            <ExactOdometer value={onlineUsers} label="ONLINE NOW" />
-            <ExactOdometer value={totalVisitors} label="ALL TIME VISITORS" />
-          </div>
-
-          {/* Footer Links */}
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-blue-400">ACCESSIBILITY</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-blue-300">Accessibility Options</a></li>
-                <li><button onClick={() => setShowSuggestionsModal(true)} className="hover:text-blue-300 text-left">Suggestions</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-orange-400">COMPANY</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-orange-300">About Us</a></li>
-                <li><a href="#" className="hover:text-orange-300">Press Kit</a></li>
-                <li><a href="#" className="hover:text-orange-300">Newsletter</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-purple-400">COMPETITIONS</h3>
-              <ul className="space-y-2 text-sm">
-                <li><button onClick={() => setShowTournamentModal(true)} className="hover:text-purple-300 text-left">Tournaments</button></li>
-                <li><button onClick={() => setShowTournamentModal(true)} className="hover:text-purple-300 text-left">Registration</button></li>
-                <li><a href="#" className="hover:text-purple-300">Prizes</a></li>
-                <li><a href="#" className="hover:text-purple-300">Awards</a></li>
-                <li><a href="#" className="hover:text-purple-300">Player of the Month</a></li>
-                <li><a href="#" className="hover:text-purple-300">Hall of Fame</a></li>
-                <li><a href="#" className="hover:text-purple-300">Credits & Credibility</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-green-400">LEGAL</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-green-300">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-green-300">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-green-300">Cookie Policy</a></li>
-                <li><a href="#" className="hover:text-green-300">Community Guidelines</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-red-400">SUPPORT</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-red-300">Contact Us</a></li>
-                <li><a href="#" className="hover:text-red-300">Help Center</a></li>
-                <li><a href="#" className="hover:text-red-300">FAQs</a></li>
-                <li><a href="#" className="hover:text-red-300">Report a Bug</a></li>
-                <li><a href="#" className="hover:text-red-300">Feature Request</a></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-bold text-lg mb-4 text-cyan-400">SOCIAL MEDIA</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="https://facebook.com" className="hover:text-cyan-300 flex items-center gap-2">📘 Facebook</a></li>
-                <li><a href="https://x.com" className="hover:text-cyan-300 flex items-center gap-2">❌ X</a></li>
-                <li><a href="https://instagram.com" className="hover:text-cyan-300 flex items-center gap-2">📷 Instagram</a></li>
-                <li><a href="https://snapchat.com" className="hover:text-cyan-300 flex items-center gap-2">👻 Snapchat</a></li>
-                <li><a href="https://youtube.com" className="hover:text-cyan-300 flex items-center gap-2">📺 YouTube</a></li>
-                <li><a href="https://linkedin.com" className="hover:text-cyan-300 flex items-center gap-2">💼 LinkedIn</a></li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Language Selection */}
-          <div className="flex justify-center items-center border-t border-gray-700 pt-6">
-            <select 
-              value={language} 
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-gray-800 text-white rounded px-3 py-2 border border-gray-600"
-              aria-label="Select Language"
-            >
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-              <option value="de">Deutsch</option>
-              <option value="it">Italiano</option>
-              <option value="pt">Português</option>
-              <option value="ru">Русский</option>
-              <option value="zh">中文</option>
-              <option value="ja">日本語</option>
-              <option value="ko">한국어</option>
-            </select>
-          </div>
-
-          {/* Mobile App Downloads */}
-          <div className="text-center mt-8">
-            <h3 className="text-lg font-bold mb-4">{t('downloadMobileApp')}</h3>
-            <div className="flex justify-center gap-4">
-              <a 
-                href="https://apps.apple.com/app/game-shell" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition-colors"
-              >
-                📱 iOS App
-              </a>
-              <a 
-                href="https://play.google.com/store/apps/details?id=com.gameshell" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition-colors"
-              >
-                🤖 Android App
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {renderFooter()}
 
       {/* Tournament Registration Modal */}
       {showTournamentModal && (
@@ -1110,6 +1193,7 @@ function App() {
         <ProfilePage 
           language={language} 
           onClose={() => setShowProfilePage(false)}
+          footer={renderFooter()}
         />
       )}
       
@@ -1250,17 +1334,6 @@ function App() {
         />
       )}
       
-      {/* Daily Dice Game */}
-      {showDailyDiceGame && (
-        <DailyDiceGame 
-          language={language} 
-          onClose={() => setShowDailyDiceGame(false)}
-          onComplete={(result) => {
-            console.log('Daily dice result:', result);
-            setShowDailyDiceGame(false);
-          }}
-        />
-      )}
       
       {/* Auction Window */}
       {showAuctionWindow && (
@@ -1283,6 +1356,7 @@ function App() {
         <ProfilePage 
           language={language} 
           onClose={() => setShowProfilePage(false)}
+          footer={renderFooter()}
         />
       )}
       
